@@ -111,14 +111,29 @@ Audits Group Policy hygiene: version sync between AD GPC and SYSVOL GPT, unlinke
 
 ```bash
 flowad gpo audit --server dc01.contoso.local --domain contoso.local
-flowad gpo audit --offline-path ./SysvolPolicies
+flowad gpo audit --offline-path ./SysvolPolicies --format html --output gpo-report.html
 ```
 
-### `flowad gpo deconflict`
+### `flowad gpo deconflict` (alias: `conflicts`)
 Evaluates policy precedence across the OU hierarchy and detects contradictory settings, overwritten parameters, and user rights collisions.
 
 ```bash
+# Terminal table output with colorized collision matrix
 flowad gpo deconflict --offline-path ./SysvolPolicies
+
+# Export interactive standalone HTML report with live search & severity filters
+flowad gpo deconflict --offline-path ./SysvolPolicies --format html --output deconfliction.html
+
+# Export spreadsheet-ready CSV for Excel
+flowad gpo deconflict --offline-path ./SysvolPolicies --format csv --output conflicts.csv
+```
+
+### `flowad gpo inspect`
+Drills down into any specific GPO by display name or GUID, dumping all parsed Administrative Templates (registry keys) and Security Template User Rights Assignments (`GptTmpl.inf`).
+
+```bash
+flowad gpo inspect --offline-path ./SysvolPolicies --name "Default Domain Policy"
+flowad gpo inspect --offline-path ./SysvolPolicies --name "Finance" --format json
 ```
 
 ### `flowad dns check`
