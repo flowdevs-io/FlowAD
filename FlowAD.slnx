@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FlowAD.Core/FlowAD.Core.csproj" />
+    <Project Path="src/FlowAD.Dns/FlowAD.Dns.csproj" />
+    <Project Path="src/FlowAD.Gpo/FlowAD.Gpo.csproj" />
+    <Project Path="src/FlowAD.Health/FlowAD.Health.csproj" />
+    <Project Path="src/FlowAD/FlowAD.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FlowAD.Tests/FlowAD.Tests.csproj" />
+  </Folder>
+</Solution>

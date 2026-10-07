@@ -1,0 +1,18 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+publish/
+dist/
+
+# Visual Studio / Rider / VS Code cache
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db

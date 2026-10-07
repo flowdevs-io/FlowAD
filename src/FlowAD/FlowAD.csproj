@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FlowAD</RootNamespace>
+    <AssemblyName>flowad</AssemblyName>
+    
+    <!-- Publishing & Portability -->
+    <PublishSingleFile Condition="'$(PublishSingleFile)' == ''">true</PublishSingleFile>
+    <SelfContained Condition="'$(SelfContained)' == ''">true</SelfContained>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlowAD.Core\FlowAD.Core.csproj" />
+    <ProjectReference Include="..\FlowAD.Gpo\FlowAD.Gpo.csproj" />
+    <ProjectReference Include="..\FlowAD.Dns\FlowAD.Dns.csproj" />
+    <ProjectReference Include="..\FlowAD.Health\FlowAD.Health.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
+  </ItemGroup>
+
+</Project>

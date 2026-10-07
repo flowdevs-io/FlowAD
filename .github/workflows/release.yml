@@ -1,0 +1,78 @@
+name: Release FlowAD
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-sign:
+    name: Build & Sign FlowAD Executables
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 10 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore FlowAD.sln
+
+    - name: Run Test Suite
+      run: dotnet test FlowAD.sln --configuration Release
+
+    - name: Publish Windows Standalone Executable (win-x64)
+      run: |
+        dotnet publish src/FlowAD/FlowAD.csproj `
+          -c Release `
+          -r win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -o publish/win-x64
+
+    - name: Sign Executable with FlowDevs Code Signing Certificate
+      shell: pwsh
+      env:
+        FLOWDEVS_AZURE_SIGN_VAULT_URL: ${{ secrets.FLOWDEVS_AZURE_SIGN_VAULT_URL || secrets.FLOWRMM_AZURE_SIGN_VAULT_URL }}
+        FLOWDEVS_AZURE_SIGN_CERT_NAME: ${{ secrets.FLOWDEVS_AZURE_SIGN_CERT_NAME || secrets.FLOWRMM_AZURE_SIGN_CERT_NAME }}
+        FLOWDEVS_AZURE_SIGN_CLIENT_ID: ${{ secrets.FLOWDEVS_AZURE_SIGN_CLIENT_ID || secrets.FLOWRMM_AZURE_SIGN_CLIENT_ID }}
+        FLOWDEVS_AZURE_SIGN_CLIENT_SECRET: ${{ secrets.FLOWDEVS_AZURE_SIGN_CLIENT_SECRET || secrets.FLOWRMM_AZURE_SIGN_CLIENT_SECRET }}
+        FLOWDEVS_AZURE_SIGN_TENANT_ID: ${{ secrets.FLOWDEVS_AZURE_SIGN_TENANT_ID || secrets.FLOWRMM_AZURE_SIGN_TENANT_ID }}
+        FLOWDEVS_AZURE_SIGN_TIMESTAMP_URL: ${{ vars.FLOWDEVS_AZURE_SIGN_TIMESTAMP_URL || vars.FLOWRMM_AZURE_SIGN_TIMESTAMP_URL || 'http://timestamp.globalsign.com/tsa/advanced' }}
+      run: |
+        ./scripts/Sign-FlowDomainArtifacts.ps1 -PublishDir publish/win-x64
+
+    - name: Verify Authenticode Signature
+      shell: pwsh
+      run: |
+        . ./scripts/_AuthenticodeValidation.ps1
+        $exe = "publish/win-x64/flowad.exe"
+        Write-Host "Verifying signature on $exe..."
+        $sig = Get-AuthenticodeSignature -FilePath $exe
+        if ($sig.Status -ne 'Valid') {
+            throw "Authenticode signature verification failed: $($sig.StatusMessage)"
+        }
+        Write-Host "Authenticode Signature Valid. Signer: $($sig.SignerCertificate.Subject)"
+
+    - name: Compress Release Archive
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "publish/win-x64/flowad.exe" -DestinationPath "flowad-win-x64.zip"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          publish/win-x64/flowad.exe
+          flowad-win-x64.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
