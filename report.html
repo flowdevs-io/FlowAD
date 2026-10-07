@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowAD - GPO Audit & Deconfliction Report (local.domain)</title>
+  <style>
+
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --cyan: #38bdf8;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --purple: #c084fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; line-height: 1.5; }
+    .container { max-width: 1300px; margin: 0 auto; }
+    header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; }
+    h1 { font-size: 1.8rem; color: var(--cyan); display: flex; align-items: center; gap: 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+    .kpi-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+    .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+    .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; }
+    .search-input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.9rem; flex-grow: 1; max-width: 350px; }
+    .pill-btn { background: #0f172a; border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.85rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .pill-btn:hover, .pill-btn.active { background: var(--border); color: #fff; border-color: var(--cyan); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
+    th { background: #0f172a; color: var(--text-muted); padding: 0.75rem 1rem; font-weight: 600; border-bottom: 1px solid var(--border); }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .badge-critical { background: rgba(248, 113, 113, 0.2); color: var(--red); border: 1px solid var(--red); }
+    .badge-error { background: rgba(248, 113, 113, 0.15); color: #fca5a5; }
+    .badge-warning { background: rgba(251, 191, 36, 0.2); color: var(--amber); }
+    .badge-info { background: rgba(56, 189, 248, 0.2); color: var(--cyan); }
+    .badge-pass { background: rgba(74, 222, 128, 0.2); color: var(--green); }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85rem; background: #0f172a; padding: 0.15rem 0.35rem; border-radius: 4px; }
+    .winner { color: var(--green); font-weight: 600; }
+    .loser { color: var(--red); }
+    footer { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 3rem; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>FlowAD GPO Audit & Deconfliction Report</h1>
+        <div class="subtitle">Target: <strong>local.domain</strong> | Generated: 2026-10-07 11:51:36 UTC</div>
+      </div>
+      <div><span class="badge badge-info">FlowDevs Certified Engine</span></div>
+    </header>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-title">Total GPOs</div><div class="kpi-value">4</div></div>
+      <div class="kpi-card"><div class="kpi-title">Total Conflicts</div><div class="kpi-value" style="color: var(--amber)">3</div></div>
+      <div class="kpi-card"><div class="kpi-title">Critical Privilege Overwrites</div><div class="kpi-value" style="color: var(--red)">2</div></div>
+      <div class="kpi-card"><div class="kpi-title">Direct Contradictions</div><div class="kpi-value" style="color: var(--red)">1</div></div>
+      <div class="kpi-card"><div class="kpi-title">AD/SYSVOL Mismatches</div><div class="kpi-value" style="color: var(--green)">0</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span>GPO Precedence & Conflict Matrix</span>
+        <span class="badge badge-critical">Fail</span>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="conflictSearch" class="search-input" placeholder="Search settings, GPOs, or scopes...">
+        <button class="pill-btn active" onclick="filterSeverity('all')">All</button>
+        <button class="pill-btn" onclick="filterSeverity('critical')">Critical</button>
+        <button class="pill-btn" onclick="filterSeverity('error')">Error</button>
+        <button class="pill-btn" onclick="filterSeverity('warning')">Warning</button>
+        <button class="pill-btn" onclick="filterSeverity('info')">Info</button>
+      </div>
+      <table id="conflictTable">
+        <thead>
+          <tr>
+            <th>Scope</th>
+            <th>Setting / Key</th>
+            <th>Conflict Type</th>
+            <th>Winning GPO &amp; Value</th>
+            <th>Losing GPO &amp; Value</th>
+            <th>Severity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-severity="error">
+            <td><span class="code">Domain Scope (Offline)</span></td>
+            <td><strong>HKLM\SOFTWARE\POLICIES\MICROSOFT\WINDOWS\SYSTEM\DISABLECMD</strong><br><small style="color: var(--text-muted);">Direct Contradiction: &#39;Finance OU Custom Policy&#39; sets &#39;1&#39; but &#39;Developer OU Override Policy&#39; sets opposing value &#39;0&#39;. &#39;Finance OU Custom Policy&#39; wins due to precedence rank 9990 vs 9980.</small></td>
+            <td>DirectContradiction</td>
+            <td><span class="winner">Finance OU Custom Policy</span><br><span class="code">1</span></td>
+            <td><span class="loser">Developer OU Override Policy</span><br><span class="code">0</span></td>
+            <td><span class="badge badge-error">Error</span></td>
+          </tr>
+          <tr data-severity="critical">
+            <td><span class="code">Domain Scope (Offline)</span></td>
+            <td><strong>[SECURITY]\PRIVILEGE RIGHTS\SEDEBUGPRIVILEGE</strong><br><small style="color: var(--text-muted);">CRITICAL User Rights collision: Windows Security Templates do NOT merge user rights assignments! &#39;Default Domain Policy&#39; completely replaces &#39;Default Domain Controllers Policy&#39;, causing identities [*S-1-5-32-544, *S-1-5-32-555] to be excluded.</small></td>
+            <td>UserRightsCollision</td>
+            <td><span class="winner">Default Domain Policy</span><br><span class="code">*S-1-5-32-544</span></td>
+            <td><span class="loser">Default Domain Controllers Policy</span><br><span class="code">*S-1-5-32-544, *S-1-5-32-555</span></td>
+            <td><span class="badge badge-critical">Critical</span></td>
+          </tr>
+          <tr data-severity="critical">
+            <td><span class="code">Domain Scope (Offline)</span></td>
+            <td><strong>[SECURITY]\SYSTEM ACCESS\MINIMUMPASSWORDLENGTH</strong><br><small style="color: var(--text-muted);">CRITICAL User Rights collision: Windows Security Templates do NOT merge user rights assignments! &#39;Default Domain Policy&#39; completely replaces &#39;Default Domain Controllers Policy&#39;, causing identities [15] to be excluded.</small></td>
+            <td>UserRightsCollision</td>
+            <td><span class="winner">Default Domain Policy</span><br><span class="code">12</span></td>
+            <td><span class="loser">Default Domain Controllers Policy</span><br><span class="code">15</span></td>
+            <td><span class="badge badge-critical">Critical</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      let currentSev = 'all';
+      const searchInput = document.getElementById('conflictSearch');
+      const rows = document.querySelectorAll('#conflictTable tbody tr');
+
+      function filterRows() {
+        const query = searchInput.value.toLowerCase();
+        rows.forEach(row => {
+          const sev = row.getAttribute('data-severity') || '';
+          const text = row.innerText.toLowerCase();
+          const matchesSev = currentSev === 'all' || sev === currentSev;
+          const matchesSearch = text.includes(query);
+          row.style.display = matchesSev && matchesSearch ? '' : 'none';
+        });
+      }
+
+      function filterSeverity(sev) {
+        currentSev = sev;
+        document.querySelectorAll('.pill-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.innerText.toLowerCase() === sev);
+        });
+        filterRows();
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterRows);
+      }
+    </script>
+
+    <footer>FlowAD Diagnostic Suite &bull; Signed by FlowDevs LLC &bull; Licensed under Apache-2.0</footer>
+  </div>
+</body>
+</html>

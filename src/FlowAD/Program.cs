@@ -27,6 +27,9 @@ public static class Program
 
                 gpo.AddCommand<GpoDeconflictCommand>("conflicts")
                     .WithDescription("Alias for deconflict.");
+
+                gpo.AddCommand<GpoInspectCommand>("inspect")
+                    .WithDescription("Inspect and dump every parsed setting within a specific GPO.");
             });
 
             config.AddBranch("dns", dns =>
