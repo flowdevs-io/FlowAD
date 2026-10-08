@@ -1,6 +1,6 @@
 # FlowAD: Lightweight Active Directory Diagnostic Suite
 
-[![CI](https://github.com/flowdevs/FlowAD/actions/workflows/ci.yml/badge.svg)](https://github.com/flowdevs/FlowAD/actions/workflows/ci.yml)
+[![CI](https://github.com/flowdevs-io/FlowAD/actions/workflows/ci.yml/badge.svg)](https://github.com/flowdevs-io/FlowAD/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Signed by FlowDevs](https://img.shields.io/badge/Authenticode-FlowDevs%20LLC-brightgreen.svg)](https://flowdevs.io)
 
@@ -181,7 +181,7 @@ Requirements: .NET 10 SDK
 
 ```bash
 # Clone repository
-git clone https://github.com/flowdevs/FlowAD.git
+git clone https://github.com/flowdevs-io/FlowAD.git
 cd FlowAD
 
 # Build solution
