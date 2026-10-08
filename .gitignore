@@ -16,3 +16,7 @@ dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Generated reports
+*.html
+*.csv
