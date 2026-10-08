@@ -16,18 +16,18 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4 pinned SHA
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v4 pinned SHA
       with:
         dotnet-version: '10.0.x'
 
     - name: Restore Dependencies
-      run: dotnet restore FlowAD.sln
+      run: dotnet restore FlowAD.slnx
 
     - name: Build Solution
-      run: dotnet build FlowAD.sln --configuration Release --no-restore
+      run: dotnet build FlowAD.slnx --configuration Release --no-restore
 
     - name: Run Unit Tests
-      run: dotnet test FlowAD.sln --configuration Release --no-build --verbosity normal
+      run: dotnet test FlowAD.slnx --configuration Release --no-build --verbosity normal

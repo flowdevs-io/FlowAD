@@ -16,18 +16,18 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4 pinned SHA
 
     - name: Setup .NET 10 SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v4 pinned SHA
       with:
         dotnet-version: '10.0.x'
 
     - name: Restore Dependencies
-      run: dotnet restore FlowAD.sln
+      run: dotnet restore FlowAD.slnx
 
     - name: Run Test Suite
-      run: dotnet test FlowAD.sln --configuration Release
+      run: dotnet test FlowAD.slnx --configuration Release
 
     - name: Publish Windows Standalone Executable (win-x64)
       run: |
@@ -36,6 +36,9 @@ jobs:
           -r win-x64 `
           --self-contained true `
           -p:PublishSingleFile=true `
+          -p:PublishTrimmed=true `
+          -p:TrimMode=partial `
+          -p:EnableCompressionInSingleFile=true `
           -p:IncludeNativeLibrariesForSelfExtract=true `
           -o publish/win-x64
 
@@ -69,7 +72,7 @@ jobs:
         Compress-Archive -Path "publish/win-x64/flowad.exe" -DestinationPath "flowad-win-x64.zip"
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3 pinned SHA
       with:
         files: |
           publish/win-x64/flowad.exe
