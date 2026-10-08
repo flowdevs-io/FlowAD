@@ -134,6 +134,13 @@ public sealed class DoctorCommand : AsyncCommand<DoctorSettings>
                 Console.WriteLine(json);
             }
         }
+        else if (settings.Format.Equals("html", StringComparison.OrdinalIgnoreCase))
+        {
+            var html = HtmlReportWriter.GenerateDoctorReport(doctorReport);
+            var path = settings.OutputFile ?? "flowad-doctor-report.html";
+            await File.WriteAllTextAsync(path, html);
+            AnsiConsole.MarkupLine($"[green]Interactive HTML doctor report written to:[/] {path}");
+        }
         else if (settings.Format.Equals("markdown", StringComparison.OrdinalIgnoreCase) || settings.Format.Equals("md", StringComparison.OrdinalIgnoreCase))
         {
             var md = MarkdownReportWriter.GenerateDoctorReport(doctorReport);
